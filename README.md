@@ -1,4 +1,6 @@
-## Welcome to GitHub Pages
+## bincodec - Binary codec for Go
+[![Coverage Status](https://coveralls.io/repos/github/corebreaker/bincodec/badge.svg?branch=master)](https://coveralls.io/github/corebreaker/bincodec?branch=master)
+
 
 You can use the [editor on GitHub](https://github.com/corebreaker/bincodec/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
 
