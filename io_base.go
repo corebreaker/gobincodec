@@ -1,5 +1,9 @@
 package bincodec
 
+import (
+    "io"
+)
+
 type IoBase interface {
     ToWriter(io.Writer) Writer
     ToWriterAt(io.WriterAt) WriterAt
@@ -22,7 +26,9 @@ func (self *tIoBase) ToWriter(w io.Writer) Writer {
 func (self *tIoBase) ToWriterAt(w io.WriterAt) WriterAt {
     return &tWriterAt{
         tIoBase: *self,
-        w:       w,
+        enc: &tEncAt{
+            w: w,
+        },
     }
 }
 
@@ -36,7 +42,9 @@ func (self *tIoBase) ToReader(r io.Reader) Reader {
 func (self *tIoBase) ToReaderAt(r io.ReaderAt) ReaderAt {
     return &tReaderAt{
         tIoBase: *self,
-        r:       r,
+        dec: &tDecAt{
+            r: r,
+        },
     }
 }
 

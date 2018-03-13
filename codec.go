@@ -5,6 +5,10 @@ import (
     "reflect"
 )
 
+var (
+    nil_value = reflect.ValueOf(nil)
+)
+
 type Serializable interface {
     Serialize(Encoder) error
     Deserialize(Decoder) error
@@ -69,18 +73,19 @@ func (self *tCodecSpec) clone() *tCodecSpec {
 }
 
 func (self *tCodecSpec) read(r io.Reader) error {
-
+    return nil
 }
 
 func (self *tCodecSpec) read_at(r io.ReaderAt, offs int64) error {
+    return nil
 }
 
 func (self *tCodecSpec) write(w io.Writer) error {
-
+    return nil
 }
 
 func (self *tCodecSpec) write_at(w io.WriterAt, offs int64) error {
-
+    return nil
 }
 
 func new_spec() *tCodecSpec {

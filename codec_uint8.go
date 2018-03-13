@@ -9,5 +9,5 @@ func (tCodecUint8) EncodeValue(enc Encoder, val interface{}) error {
 }
 
 func (tCodecUint8) DecodeValue(dec Decoder) (reflect.Value, error) {
-    return reflect.ValueOf(nil), nil
+    return nil_value, nil
 }

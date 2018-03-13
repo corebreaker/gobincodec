@@ -23,7 +23,7 @@ type Decoder interface {
     DecodeUint32(*uint32) error
     DecodeUint64(*uint64) error
     DecodeUintptr(*uintptr) error
-    DecodeUnsafePtr(*unsafe.Pointer) error
+    DecodePtr(*unsafe.Pointer) error
     DecodeFloat32(*float32) error
     DecodeFloat64(*float64) error
     DecodeComplex64(*complex64) error
@@ -61,58 +61,6 @@ type Reader interface {
     ReadHeader() error
 }
 
-type ReaderAt interface {
-    CodecBase
-    IoBase
-
-    ReadHeaderAtBegin() error
-    ReadHeaderAt(int64) error
-    CloneReaderAt(io.ReaderAt) ReaderAt
-
-    DecodeAt(interface{}, int64) error
-    DecodeValueAt(reflect.Value, int64) error
-    DecodeBoolAt(*bool, int64) error
-    DecodeByteAt(*byte, int64) error
-    DecodeIntAt(*int, int64) error
-    DecodeInt8At(*int8, int64) error
-    DecodeInt16At(*int16, int64) error
-    DecodeInt32At(*int32, int64) error
-    DecodeInt64At(*int64, int64) error
-    DecodeUintAt(*uint, int64) error
-    DecodeUint8At(*uint8, int64) error
-    DecodeUint16At(*uint16, int64) error
-    DecodeUint32At(*uint32, int64) error
-    DecodeUint64At(*uint64, int64) error
-    DecodeUintptrAt(*uintptr, int64) error
-    DecodeUnsafePtrAt(*unsafe.Pointer, int64) error
-    DecodeFloat32At(*float32, int64) error
-    DecodeFloat64At(*float64, int64) error
-    DecodeComplex64At(*complex64, int64) error
-    DecodeComplex128At(*complex128, int64) error
-    DecodeStringAt(*string, int64) error
-    DecodeTimeAt(*time.Time, int64) error
-    DecodeBoolSliceAt(*[]bool, int64) error
-    DecodeByteSliceAt(*[]byte, int64) error
-    DecodeIntSliceAt(*[]int, int64) error
-    DecodeInt8SliceAt(*[]int8, int64) error
-    DecodeInt16SliceAt(*[]int16, int64) error
-    DecodeInt32SliceAt(*[]int32, int64) error
-    DecodeInt64SliceAt(*[]int64, int64) error
-    DecodeUintSliceAt(*[]uint, int64) error
-    DecodeUint8SliceAt(*[]uint8, int64) error
-    DecodeUint16SliceAt(*[]uint16, int64) error
-    DecodeUint32SliceAt(*[]uint32, int64) error
-    DecodeUint64SliceAt(*[]uint64, int64) error
-    DecodeUintptrSliceAt(*[]uintptr, int64) error
-    DecodeFloat32SliceAt(*[]float32, int64) error
-    DecodeFloat64SliceAt(*[]float64, int64) error
-    DecodeComplex64SliceAt(*[]complex64, int64) error
-    DecodeComplex128SliceAt(*[]complex128, int64) error
-    DecodeStringSliceAt(*[]string, int64) error
-    DecodeSliceAt(*[]interface{}, int64) error
-    DecodeSerializableAt(Serializable, int64) error
-}
-
 type tReader struct {
     tIoBase
 
@@ -123,11 +71,11 @@ func (self *tReader) CloneReader(r io.Reader) Reader {
     return &tReader{
         tIoBase: tIoBase{
             tCodecBase: tCodecBase{
-                spec: self.spec.clone()
+                spec: self.spec.clone(),
             },
-
-            r: r,
         },
+
+        r:  r,
     }
 }
 
@@ -135,28 +83,45 @@ func (self *tReader) ReadHeader() error {
     return self.spec.read(self.r)
 }
 
-type tReaderAt struct {
-    tIoBase
-
-    r   io.ReaderAt
-}
-
-func (self *tReaderAt) ReadHeaderAtBegin() error {
-    return self.spec.read_at(self.r, 0)
-}
-
-func (self *tReaderAt) ReadHeaderAt(offset int64) error {
-    return self.spec.read_at(self.r, offset)
-}
-
-func (self *tReaderAt) CloneReaderAt(r io.ReaderAt) ReaderAt {
-    return &tReaderAt{
-        tIoBase: tIoBase{
-            tCodecBase: tCodecBase{
-                spec: self.spec.clone()
-            },
-
-            r: r,
-        },
-    }
-}
+func (self *tReader) Decode(values ...interface{}) error          { return nil }
+func (self *tReader) DecodeValue(v reflect.Value) error           { return nil }
+func (self *tReader) DecodeBool(v *bool) error                    { return nil }
+func (self *tReader) DecodeByte(v *byte) error                    { return nil }
+func (self *tReader) DecodeInt(v *int) error                      { return nil }
+func (self *tReader) DecodeInt8(v *int8) error                    { return nil }
+func (self *tReader) DecodeInt16(v *int16) error                  { return nil }
+func (self *tReader) DecodeInt32(v *int32) error                  { return nil }
+func (self *tReader) DecodeInt64(v *int64) error                  { return nil }
+func (self *tReader) DecodeUint(v *uint) error                    { return nil }
+func (self *tReader) DecodeUint8(v *uint8) error                  { return nil }
+func (self *tReader) DecodeUint16(v *uint16) error                { return nil }
+func (self *tReader) DecodeUint32(v *uint32) error                { return nil }
+func (self *tReader) DecodeUint64(v *uint64) error                { return nil }
+func (self *tReader) DecodeUintptr(v *uintptr) error              { return nil }
+func (self *tReader) DecodePtr(v *unsafe.Pointer) error           { return nil }
+func (self *tReader) DecodeFloat32(v *float32) error              { return nil }
+func (self *tReader) DecodeFloat64(v *float64) error              { return nil }
+func (self *tReader) DecodeComplex64(v *complex64) error          { return nil }
+func (self *tReader) DecodeComplex128(v *complex128) error        { return nil }
+func (self *tReader) DecodeString(v *string) error                { return nil }
+func (self *tReader) DecodeTime(v *time.Time) error               { return nil }
+func (self *tReader) DecodeBoolSlice(v *[]bool) error             { return nil }
+func (self *tReader) DecodeByteSlice(v *[]byte) error             { return nil }
+func (self *tReader) DecodeIntSlice(v *[]int) error               { return nil }
+func (self *tReader) DecodeInt8Slice(v *[]int8) error             { return nil }
+func (self *tReader) DecodeInt16Slice(v *[]int16) error           { return nil }
+func (self *tReader) DecodeInt32Slice(v *[]int32) error           { return nil }
+func (self *tReader) DecodeInt64Slice(v *[]int64) error           { return nil }
+func (self *tReader) DecodeUintSlice(v *[]uint) error             { return nil }
+func (self *tReader) DecodeUint8Slice(v *[]uint8) error           { return nil }
+func (self *tReader) DecodeUint16Slice(v *[]uint16) error         { return nil }
+func (self *tReader) DecodeUint32Slice(v *[]uint32) error         { return nil }
+func (self *tReader) DecodeUint64Slice(v *[]uint64) error         { return nil }
+func (self *tReader) DecodeUintptrSlice(v *[]uintptr) error       { return nil }
+func (self *tReader) DecodeFloat32Slice(v *[]float32) error       { return nil }
+func (self *tReader) DecodeFloat64Slice(v *[]float64) error       { return nil }
+func (self *tReader) DecodeComplex64Slice(v *[]complex64) error   { return nil }
+func (self *tReader) DecodeComplex128Slice(v *[]complex128) error { return nil }
+func (self *tReader) DecodeStringSlice(v *[]string) error         { return nil }
+func (self *tReader) DecodeSlice(v *[]interface{}) error          { return nil }
+func (self *tReader) DecodeSerializable(v Serializable) error     { return nil }

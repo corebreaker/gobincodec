@@ -23,7 +23,7 @@ type Encoder interface {
     EncodeUint32(uint32) error
     EncodeUint64(uint64) error
     EncodeUintptr(uintptr) error
-    EncodeUnsafePtr(unsafe.Pointer) error
+    EncodePtr(unsafe.Pointer) error
     EncodeFloat32(float32) error
     EncodeFloat64(float64) error
     EncodeComplex64(complex64) error
@@ -61,58 +61,6 @@ type Writer interface {
     WriteHeader() error
 }
 
-type WriterAt interface {
-    CodecBase
-    IoBase
-
-    WriteHeaderAtBegin() error
-    WriteHeaderAt(int64) error
-    CloneWriterAt(io.WriterAt) WriterAt
-
-    EncodeAt(interface{}, int64) error
-    EncodeValueAt(reflect.Value, int64) error
-    EncodeBoolAt(bool, int64) error
-    EncodeByteAt(byte, int64) error
-    EncodeIntAt(int, int64) error
-    EncodeInt8At(int8, int64) error
-    EncodeInt16At(int16, int64) error
-    EncodeInt32At(int32, int64) error
-    EncodeInt64At(int64, int64) error
-    EncodeUintAt(uint, int64) error
-    EncodeUint8At(uint8, int64) error
-    EncodeUint16At(uint16, int64) error
-    EncodeUint32At(uint32, int64) error
-    EncodeUint64At(uint64, int64) error
-    EncodeUintptrAt(uintptr, int64) error
-    EncodeUnsafePtrAt(unsafe.Pointer, int64) error
-    EncodeFloat32At(float32, int64) error
-    EncodeFloat64At(float64, int64) error
-    EncodeComplex64At(complex64, int64) error
-    EncodeComplex128At(complex128, int64) error
-    EncodeStringAt(string, int64) error
-    EncodeTimeAt(time.Time, int64) error
-    EncodeBoolSliceAt([]bool, int64) error
-    EncodeByteSliceAt([]byte, int64) error
-    EncodeIntSliceAt([]int, int64) error
-    EncodeInt8SliceAt([]int8, int64) error
-    EncodeInt16SliceAt([]int16, int64) error
-    EncodeInt32SliceAt([]int32, int64) error
-    EncodeInt64SliceAt([]int64, int64) error
-    EncodeUintSliceAt([]uint, int64) error
-    EncodeUint8SliceAt([]uint8, int64) error
-    EncodeUint16SliceAt([]uint16, int64) error
-    EncodeUint32SliceAt([]uint32, int64) error
-    EncodeUint64SliceAt([]uint64, int64) error
-    EncodeUintptrSliceAt([]uintptr, int64) error
-    EncodeFloat32SliceAt([]float32, int64) error
-    EncodeFloat64SliceAt([]float64, int64) error
-    EncodeComplex64SliceAt([]complex64, int64) error
-    EncodeComplex128SliceAt([]complex128, int64) error
-    EncodeStringSliceAt([]string, int64) error
-    EncodeSliceAt([]interface{}, int64) error
-    EncodeSerializableAt(Serializable, int64) error
-}
-
 type tWriter struct {
     tIoBase
 
@@ -123,11 +71,11 @@ func (self *tWriter) CloneWriter(w io.Writer) Writer {
     return &tWriter{
         tIoBase: tIoBase{
             tCodecBase: tCodecBase{
-                spec: self.spec.clone()
+                spec: self.spec.clone(),
             },
-
-            w: w,
         },
+
+        w:  w,
     }
 }
 
@@ -135,28 +83,45 @@ func (self *tWriter) WriteHeader() error {
     return self.spec.write(self.w)
 }
 
-type tWriterAt struct {
-    tIoBase
-
-    w   io.WriterAt
-}
-
-func (self *tWriterAt) WriteHeaderAtBegin() error {
-    return self.spec.write_at(self.w, 0)
-}
-
-func (self *tWriterAt) WriteHeaderAt(offset int64) error {
-    return self.spec.write_at(self.w, offset)
-}
-
-func (self *tWriterAt) CloneWriterAt(w io.WriterAt) WriterAt {
-    return &tWriterAt{
-        tIoBase: tIoBase{
-            tCodecBase: tCodecBase{
-                spec: self.spec.clone()
-            },
-
-            w: w,
-        },
-    }
-}
+func (self *tWriter) Encode(values ...interface{}) error         { return nil }
+func (self *tWriter) EncodeValue(v reflect.Value) error          { return nil }
+func (self *tWriter) EncodeBool(v bool) error                    { return nil }
+func (self *tWriter) EncodeByte(v byte) error                    { return nil }
+func (self *tWriter) EncodeInt(v int) error                      { return nil }
+func (self *tWriter) EncodeInt8(v int8) error                    { return nil }
+func (self *tWriter) EncodeInt16(v int16) error                  { return nil }
+func (self *tWriter) EncodeInt32(v int32) error                  { return nil }
+func (self *tWriter) EncodeInt64(v int64) error                  { return nil }
+func (self *tWriter) EncodeUint(v uint) error                    { return nil }
+func (self *tWriter) EncodeUint8(v uint8) error                  { return nil }
+func (self *tWriter) EncodeUint16(v uint16) error                { return nil }
+func (self *tWriter) EncodeUint32(v uint32) error                { return nil }
+func (self *tWriter) EncodeUint64(v uint64) error                { return nil }
+func (self *tWriter) EncodeUintptr(v uintptr) error              { return nil }
+func (self *tWriter) EncodePtr(v unsafe.Pointer) error           { return nil }
+func (self *tWriter) EncodeFloat32(v float32) error              { return nil }
+func (self *tWriter) EncodeFloat64(v float64) error              { return nil }
+func (self *tWriter) EncodeComplex64(v complex64) error          { return nil }
+func (self *tWriter) EncodeComplex128(v complex128) error        { return nil }
+func (self *tWriter) EncodeString(v string) error                { return nil }
+func (self *tWriter) EncodeTime(v time.Time) error               { return nil }
+func (self *tWriter) EncodeBoolSlice(v []bool) error             { return nil }
+func (self *tWriter) EncodeByteSlice(v []byte) error             { return nil }
+func (self *tWriter) EncodeIntSlice(v []int) error               { return nil }
+func (self *tWriter) EncodeInt8Slice(v []int8) error             { return nil }
+func (self *tWriter) EncodeInt16Slice(v []int16) error           { return nil }
+func (self *tWriter) EncodeInt32Slice(v []int32) error           { return nil }
+func (self *tWriter) EncodeInt64Slice(v []int64) error           { return nil }
+func (self *tWriter) EncodeUintSlice(v []uint) error             { return nil }
+func (self *tWriter) EncodeUint8Slice(v []uint8) error           { return nil }
+func (self *tWriter) EncodeUint16Slice(v []uint16) error         { return nil }
+func (self *tWriter) EncodeUint32Slice(v []uint32) error         { return nil }
+func (self *tWriter) EncodeUint64Slice(v []uint64) error         { return nil }
+func (self *tWriter) EncodeUintptrSlice(v []uintptr) error       { return nil }
+func (self *tWriter) EncodeFloat32Slice(v []float32) error       { return nil }
+func (self *tWriter) EncodeFloat64Slice(v []float64) error       { return nil }
+func (self *tWriter) EncodeComplex64Slice(v []complex64) error   { return nil }
+func (self *tWriter) EncodeComplex128Slice(v []complex128) error { return nil }
+func (self *tWriter) EncodeStringSlice(v []string) error         { return nil }
+func (self *tWriter) EncodeSlice(v []interface{}) error          { return nil }
+func (self *tWriter) EncodeSerializable(v Serializable) error    { return nil }
