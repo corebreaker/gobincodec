@@ -20,7 +20,7 @@ func (self *tDecAt) seek(p int64) Decoder {
         r:  self,
     }
 }
-
+type x = tTypeId
 func (self *tDecAt) decode(v interface{}, at int64) (int, error)         { return 0, nil }
 func (self *tDecAt) dec_value(v reflect.Value, at int64) (int, error)    { return 0, nil }
 func (self *tDecAt) dec_bool(v *bool, at int64) (int, error)             { return 0, nil }

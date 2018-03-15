@@ -1,86 +1,41 @@
 package bincodec
 
 import (
-    "io"
-    "reflect"
-    "time"
-    "unsafe"
+	"io"
+	"reflect"
+	"time"
+	"unsafe"
 )
 
-type Decoder interface {
-    Decode(...interface{}) error
-    DecodeValue(reflect.Value) error
-    DecodeBool(*bool) error
-    DecodeByte(*byte) error
-    DecodeInt(*int) error
-    DecodeInt8(*int8) error
-    DecodeInt16(*int16) error
-    DecodeInt32(*int32) error
-    DecodeInt64(*int64) error
-    DecodeUint(*uint) error
-    DecodeUint8(*uint8) error
-    DecodeUint16(*uint16) error
-    DecodeUint32(*uint32) error
-    DecodeUint64(*uint64) error
-    DecodeUintptr(*uintptr) error
-    DecodePtr(*unsafe.Pointer) error
-    DecodeFloat32(*float32) error
-    DecodeFloat64(*float64) error
-    DecodeComplex64(*complex64) error
-    DecodeComplex128(*complex128) error
-    DecodeString(*string) error
-    DecodeTime(*time.Time) error
-    DecodeBoolSlice(*[]bool) error
-    DecodeByteSlice(*[]byte) error
-    DecodeIntSlice(*[]int) error
-    DecodeInt8Slice(*[]int8) error
-    DecodeInt16Slice(*[]int16) error
-    DecodeInt32Slice(*[]int32) error
-    DecodeInt64Slice(*[]int64) error
-    DecodeUintSlice(*[]uint) error
-    DecodeUint8Slice(*[]uint8) error
-    DecodeUint16Slice(*[]uint16) error
-    DecodeUint32Slice(*[]uint32) error
-    DecodeUint64Slice(*[]uint64) error
-    DecodeUintptrSlice(*[]uintptr) error
-    DecodeFloat32Slice(*[]float32) error
-    DecodeFloat64Slice(*[]float64) error
-    DecodeComplex64Slice(*[]complex64) error
-    DecodeComplex128Slice(*[]complex128) error
-    DecodeStringSlice(*[]string) error
-    DecodeSlice(*[]interface{}) error
-    DecodeSerializable(Serializable) error
-}
-
 type Reader interface {
-    CodecBase
-    IoBase
-    Decoder
+	CodecBase
+	IoBase
+	Decoder
 
-    CloneReader(io.Reader) Reader
-    ReadHeader() error
+	CloneReader(io.Reader) Reader
+	ReadHeader() error
 }
 
 type tReader struct {
-    tIoBase
+	tIoBase
 
-    r   io.Reader
+	r io.Reader
 }
 
 func (self *tReader) CloneReader(r io.Reader) Reader {
-    return &tReader{
-        tIoBase: tIoBase{
-            tCodecBase: tCodecBase{
-                spec: self.spec.clone(),
-            },
-        },
+	return &tReader{
+		tIoBase: tIoBase{
+			tCodecBase: tCodecBase{
+				spec: self.spec.clone(),
+			},
+		},
 
-        r:  r,
-    }
+		r: r,
+	}
 }
 
 func (self *tReader) ReadHeader() error {
-    return self.spec.read(self.r)
+	return self.spec.read(self.r)
 }
 
 func (self *tReader) Decode(values ...interface{}) error          { return nil }

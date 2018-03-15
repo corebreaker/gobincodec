@@ -1,4 +1,4 @@
-package bincodec
+ package bincodec
 
 import (
     "reflect"
