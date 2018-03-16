@@ -4,12 +4,13 @@ import (
 	"io"
 	"reflect"
 
+	"github.com/corebreaker/gobincodec/desc/base"
 	"github.com/corebreaker/gobincodec/util"
 )
 
 type DescArrayUint8 struct{ DescSliceUint8 }
 
-func (DescArrayUint8) Decode(r io.Reader) (*reflect.Value, error) {
+func (DescArrayUint8) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err

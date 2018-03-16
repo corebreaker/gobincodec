@@ -5,8 +5,17 @@ import (
 	"reflect"
 )
 
-type DescBase struct{}
+type DescBase struct {
+	id DescId
+}
 
-func (*DescBase) Read(io.Reader) error  { return nil }
-func (*DescBase) Write(io.Writer) error { return nil }
-func (*DescBase) Make(reflect.Type)     {}
+func (d *DescBase) GetId() DescId                { return d.id }
+func (*DescBase) Read(ISpec, io.Reader) error    { return nil }
+func (*DescBase) Write(ISpec, io.Writer) error   { return nil }
+func (*DescBase) Make(ISpec, reflect.Type) error { return nil }
+
+func NewBase(id DescId) DescBase {
+	return DescBase{
+		id: id,
+	}
+}

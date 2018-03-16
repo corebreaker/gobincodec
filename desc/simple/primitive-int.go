@@ -4,12 +4,13 @@ import (
 	"io"
 	"reflect"
 
+	"github.com/corebreaker/gobincodec/desc/base"
 	"github.com/corebreaker/gobincodec/util"
 )
 
 type DescPrimitiveInt struct{ DescPrimitiveInt64 }
 
-func (*DescPrimitiveInt) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescPrimitiveInt) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	var num int64
 
 	if err := util.DecodeNum(r, &num); err != nil {

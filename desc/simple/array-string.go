@@ -5,12 +5,13 @@ import (
 	"io"
 	"reflect"
 
+	"github.com/corebreaker/gobincodec/desc/base"
 	"github.com/corebreaker/gobincodec/util"
 )
 
 type DescArrayString struct{ DescSliceString }
 
-func (*DescArrayString) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescArrayString) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, error) {
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err
@@ -31,7 +32,7 @@ func (*DescArrayString) Decode(r io.Reader) (*reflect.Value, error) {
 	res := reflect.New(reflect.ArrayOf(count, reflect.TypeOf(""))).Elem()
 
 	for i := 0; i < count; i++ {
-		val, err := strCodec.Decode(buf)
+		val, err := strCodec.Decode(spec, buf)
 		if err != nil {
 			return nil, err
 		}

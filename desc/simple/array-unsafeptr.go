@@ -5,12 +5,13 @@ import (
 	"reflect"
 	"unsafe"
 
+	"github.com/corebreaker/gobincodec/desc/base"
 	"github.com/corebreaker/gobincodec/util"
 )
 
 type DescArrayUnsafePtr struct{ DescSliceUnsafePtr }
 
-func (DescArrayUnsafePtr) Decode(r io.Reader) (*reflect.Value, error) {
+func (DescArrayUnsafePtr) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err

@@ -11,7 +11,7 @@ import (
 
 type DescSliceFloat32 struct{ base.DescBase }
 
-func (*DescSliceFloat32) Encode(w io.Writer, v reflect.Value) error {
+func (*DescSliceFloat32) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
 	count := v.Len()
 
 	var out bytes.Buffer
@@ -29,7 +29,7 @@ func (*DescSliceFloat32) Encode(w io.Writer, v reflect.Value) error {
 	return util.Write(w, out.Bytes())
 }
 
-func (*DescSliceFloat32) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescSliceFloat32) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err

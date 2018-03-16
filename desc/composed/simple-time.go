@@ -11,7 +11,7 @@ import (
 
 type DescSimpleTime struct{ base.DescBase }
 
-func (*DescSimpleTime) Encode(w io.Writer, v reflect.Value) error {
+func (*DescSimpleTime) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
 	value := v.Interface().(time.Time)
 	buf, err := util.MarshallTime(&value)
 	if err != nil {
@@ -25,7 +25,7 @@ func (*DescSimpleTime) Encode(w io.Writer, v reflect.Value) error {
 	return util.Write(w, res)
 }
 
-func (*DescSimpleTime) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescSimpleTime) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	var size_buf [1]byte
 
 	if err := util.Read(r, size_buf[:]); err != nil {

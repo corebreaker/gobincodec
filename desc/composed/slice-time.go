@@ -14,7 +14,7 @@ var timeCodec = new(DescSimpleTime)
 
 type DescSliceTime struct{ base.DescBase }
 
-func (*DescSliceTime) Encode(w io.Writer, v reflect.Value) error {
+func (*DescSliceTime) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
 	count := v.Len()
 
 	var out bytes.Buffer
@@ -24,7 +24,7 @@ func (*DescSliceTime) Encode(w io.Writer, v reflect.Value) error {
 	}
 
 	for i := 0; i < count; i++ {
-		if err := timeCodec.Encode(&out, v.Index(i)); err != nil {
+		if err := timeCodec.Encode(spec, &out, v.Index(i)); err != nil {
 			return err
 		}
 	}
@@ -42,7 +42,7 @@ func (*DescSliceTime) Encode(w io.Writer, v reflect.Value) error {
 	return util.Write(w, res.Bytes())
 }
 
-func (*DescSliceTime) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescSliceTime) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, error) {
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (*DescSliceTime) Decode(r io.Reader) (*reflect.Value, error) {
 	in := make([]time.Time, count)
 
 	for i := 0; i < size; i++ {
-		val, err := timeCodec.Decode(buf)
+		val, err := timeCodec.Decode(spec, buf)
 		if err != nil {
 			return nil, err
 		}

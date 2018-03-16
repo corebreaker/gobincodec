@@ -6,12 +6,13 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/corebreaker/gobincodec/desc/base"
 	"github.com/corebreaker/gobincodec/util"
 )
 
 type DescArrayTime struct{ DescSliceTime }
 
-func (*DescArrayTime) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescArrayTime) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, error) {
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err
@@ -32,7 +33,7 @@ func (*DescArrayTime) Decode(r io.Reader) (*reflect.Value, error) {
 	res := reflect.New(reflect.ArrayOf(count, reflect.TypeOf((*time.Time)(nil)).Elem())).Elem()
 
 	for i := 0; i < count; i++ {
-		val, err := timeCodec.Decode(buf)
+		val, err := timeCodec.Decode(spec, buf)
 		if err != nil {
 			return nil, err
 		}

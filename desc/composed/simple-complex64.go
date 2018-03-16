@@ -10,11 +10,11 @@ import (
 
 type DescSimpleComplex64 struct{ base.DescBase }
 
-func (*DescSimpleComplex64) Encode(w io.Writer, v reflect.Value) error {
+func (*DescSimpleComplex64) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
 	return util.EncodeNum(w, complex64(v.Complex()))
 }
 
-func (*DescSimpleComplex64) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescSimpleComplex64) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	var num complex64
 
 	if err := util.DecodeNum(r, &num); err != nil {

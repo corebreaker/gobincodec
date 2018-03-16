@@ -10,11 +10,11 @@ import (
 
 type DescPrimitiveUint8 struct{ base.DescBase }
 
-func (*DescPrimitiveUint8) Encode(w io.Writer, v reflect.Value) error {
+func (*DescPrimitiveUint8) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
 	return util.EncodeNum(w, uint8(v.Uint()))
 }
 
-func (*DescPrimitiveUint8) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescPrimitiveUint8) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	var num uint8
 
 	if err := util.DecodeNum(r, &num); err != nil {

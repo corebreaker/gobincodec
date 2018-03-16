@@ -11,11 +11,11 @@ import (
 
 type DescPrimitiveUnsafePtr struct{ base.DescBase }
 
-func (*DescPrimitiveUnsafePtr) Encode(w io.Writer, v reflect.Value) error {
+func (*DescPrimitiveUnsafePtr) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
 	return util.EncodeNum(w, uint64(v.Pointer()))
 }
 
-func (*DescPrimitiveUnsafePtr) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescPrimitiveUnsafePtr) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	var num uint64
 
 	if err := util.DecodeNum(r, &num); err != nil {

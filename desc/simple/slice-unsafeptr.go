@@ -12,7 +12,7 @@ import (
 
 type DescSliceUnsafePtr struct{ base.DescBase }
 
-func (*DescSliceUnsafePtr) Encode(w io.Writer, v reflect.Value) error {
+func (*DescSliceUnsafePtr) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
 	count := v.Len()
 
 	var out bytes.Buffer
@@ -30,7 +30,7 @@ func (*DescSliceUnsafePtr) Encode(w io.Writer, v reflect.Value) error {
 	return util.Write(w, out.Bytes())
 }
 
-func (*DescSliceUnsafePtr) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescSliceUnsafePtr) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err

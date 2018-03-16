@@ -11,7 +11,7 @@ import (
 
 type DescPrimitiveString struct{ base.DescBase }
 
-func (*DescPrimitiveString) Encode(w io.Writer, v reflect.Value) error {
+func (*DescPrimitiveString) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
 	var out bytes.Buffer
 
 	value := []byte(v.String())
@@ -26,7 +26,7 @@ func (*DescPrimitiveString) Encode(w io.Writer, v reflect.Value) error {
 	return util.Write(w, out.Bytes())
 }
 
-func (*DescPrimitiveString) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescPrimitiveString) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err

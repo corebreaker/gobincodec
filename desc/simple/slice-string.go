@@ -13,7 +13,7 @@ var strCodec = new(DescPrimitiveBool)
 
 type DescSliceString struct{ base.DescBase }
 
-func (*DescSliceString) Encode(w io.Writer, v reflect.Value) error {
+func (*DescSliceString) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
 	count := v.Len()
 
 	var out bytes.Buffer
@@ -23,7 +23,7 @@ func (*DescSliceString) Encode(w io.Writer, v reflect.Value) error {
 	}
 
 	for i := 0; i < count; i++ {
-		if err := strCodec.Encode(&out, v.Index(i)); err != nil {
+		if err := strCodec.Encode(spec, &out, v.Index(i)); err != nil {
 			return err
 		}
 	}
@@ -41,7 +41,7 @@ func (*DescSliceString) Encode(w io.Writer, v reflect.Value) error {
 	return util.Write(w, res.Bytes())
 }
 
-func (*DescSliceString) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescSliceString) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, error) {
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (*DescSliceString) Decode(r io.Reader) (*reflect.Value, error) {
 	in := make([]string, count)
 
 	for i := 0; i < size; i++ {
-		val, err := strCodec.Decode(buf)
+		val, err := strCodec.Decode(spec, buf)
 		if err != nil {
 			return nil, err
 		}

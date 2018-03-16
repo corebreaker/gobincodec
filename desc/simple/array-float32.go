@@ -4,12 +4,13 @@ import (
 	"io"
 	"reflect"
 
+	"github.com/corebreaker/gobincodec/desc/base"
 	"github.com/corebreaker/gobincodec/util"
 )
 
 type DescArrayFloat32 struct{ DescSliceFloat32 }
 
-func (*DescArrayFloat32) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescArrayFloat32) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err

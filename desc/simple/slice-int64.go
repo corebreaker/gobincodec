@@ -11,7 +11,7 @@ import (
 
 type DescSliceInt64 struct{ base.DescBase }
 
-func (*DescSliceInt64) Encode(w io.Writer, v reflect.Value) error {
+func (*DescSliceInt64) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
 	count := v.Len()
 
 	var out bytes.Buffer
@@ -29,7 +29,7 @@ func (*DescSliceInt64) Encode(w io.Writer, v reflect.Value) error {
 	return util.Write(w, out.Bytes())
 }
 
-func (*DescSliceInt64) Decode(r io.Reader) (*reflect.Value, error) {
+func (*DescSliceInt64) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err
