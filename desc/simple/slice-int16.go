@@ -1,7 +1,6 @@
 package simple
 
 import (
-	"bytes"
 	"io"
 	"reflect"
 
@@ -9,27 +8,34 @@ import (
 	"github.com/corebreaker/gobincodec/util"
 )
 
-type DescSliceInt16 struct{ base.DescBase }
+type DescSliceInt16 struct{ DescArrayInt16 }
 
-func (*DescSliceInt16) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
-	count := v.Len()
-
-	var out bytes.Buffer
-
-	if err := util.EncodeSize(&out, count); err != nil {
-		return err
+func (ds *DescSliceInt16) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
+	if util.IsNil(v) {
+		return util.WriteBool(w, true)
 	}
 
-	for i := 0; i < count; i++ {
-		if err := util.EncodeNum(&out, int16(v.Index(i).Int())); err != nil {
-			return err
-		}
+	if err := util.WriteBool(w, false); err != nil {
+		return nil
 	}
 
-	return util.Write(w, out.Bytes())
+	return ds.DescArrayInt16.Encode(spec, w, v)
 }
 
 func (*DescSliceInt16) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
+	isNil, err := util.ReadBool(r)
+	if err != nil {
+		return nil, err
+	}
+
+	if isNil {
+		var val []int16
+
+		res := reflect.ValueOf(&val).Elem()
+
+		return &res, nil
+	}
+
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err

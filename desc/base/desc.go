@@ -9,6 +9,7 @@ type DescId uint16
 
 type IDesc interface {
 	GetId() DescId
+	IsNil() bool
 
 	Encode(ISpec, io.Writer, reflect.Value) error
 	Decode(ISpec, io.Reader) (*reflect.Value, error)

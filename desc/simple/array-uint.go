@@ -8,7 +8,7 @@ import (
 	"github.com/corebreaker/gobincodec/util"
 )
 
-type DescArrayUint struct{ DescSliceUint }
+type DescArrayUint struct{ DescArrayUint64 }
 
 func (DescArrayUint) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	size, err := util.DecodeSize(r)
@@ -17,6 +17,9 @@ func (DescArrayUint) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
 	}
 
 	res := reflect.New(reflect.ArrayOf(size, reflect.TypeOf(uint(0)))).Elem()
+	if size == 0 {
+		return &res, nil
+	}
 
 	for i := 0; i < size; i++ {
 		var v uint64

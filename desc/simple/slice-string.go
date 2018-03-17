@@ -1,7 +1,6 @@
 package simple
 
 import (
-	"bytes"
 	"io"
 	"reflect"
 
@@ -9,60 +8,43 @@ import (
 	"github.com/corebreaker/gobincodec/util"
 )
 
-var strCodec = new(DescPrimitiveBool)
+type DescSliceString struct{ DescArrayString }
 
-type DescSliceString struct{ base.DescBase }
-
-func (*DescSliceString) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
-	count := v.Len()
-
-	var out bytes.Buffer
-
-	if err := util.EncodeSize(&out, count); err != nil {
-		return err
+func (ds *DescSliceString) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
+	if util.IsNil(v) {
+		return util.WriteBool(w, true)
 	}
 
-	for i := 0; i < count; i++ {
-		if err := strCodec.Encode(spec, &out, v.Index(i)); err != nil {
-			return err
-		}
+	if err := util.WriteBool(w, false); err != nil {
+		return nil
 	}
 
-	var res bytes.Buffer
-
-	if err := util.EncodeSize(&res, out.Len()); err != nil {
-		return err
-	}
-
-	if err := util.TransferTo(&res, &out); err != nil {
-		return err
-	}
-
-	return util.Write(w, res.Bytes())
+	return ds.DescArrayString.Encode(spec, w, v)
 }
 
 func (*DescSliceString) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, error) {
-	size, err := util.DecodeSize(r)
+	isNil, err := util.ReadBool(r)
 	if err != nil {
 		return nil, err
 	}
 
-	code := make([]byte, size)
-	if err := util.Read(r, code); err != nil {
-		return nil, err
+	if isNil {
+		var val []string
+
+		res := reflect.ValueOf(&val).Elem()
+
+		return &res, nil
 	}
 
-	buf := bytes.NewBuffer(code)
-
-	count, err := util.DecodeSize(buf)
+	count, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err
 	}
 
 	in := make([]string, count)
 
-	for i := 0; i < size; i++ {
-		val, err := strCodec.Decode(spec, buf)
+	for i := 0; i < count; i++ {
+		val, err := strCodec.Decode(spec, r)
 		if err != nil {
 			return nil, err
 		}

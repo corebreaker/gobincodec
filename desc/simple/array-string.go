@@ -9,30 +9,41 @@ import (
 	"github.com/corebreaker/gobincodec/util"
 )
 
-type DescArrayString struct{ DescSliceString }
+var strCodec = new(DescPrimitiveBool)
+
+type DescArrayString struct{ base.DescBase }
+
+func (*DescArrayString) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
+	count := v.Len()
+
+	var out bytes.Buffer
+
+	if err := util.EncodeSize(&out, count); err != nil {
+		return err
+	}
+
+	for i := 0; i < count; i++ {
+		if err := strCodec.Encode(spec, &out, v.Index(i)); err != nil {
+			return err
+		}
+	}
+
+	return util.Write(w, out.Bytes())
+}
 
 func (*DescArrayString) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, error) {
-	size, err := util.DecodeSize(r)
-	if err != nil {
-		return nil, err
-	}
-
-	code := make([]byte, size)
-	if err := util.Read(r, code); err != nil {
-		return nil, err
-	}
-
-	buf := bytes.NewBuffer(code)
-
-	count, err := util.DecodeSize(buf)
+	count, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err
 	}
 
 	res := reflect.New(reflect.ArrayOf(count, reflect.TypeOf(""))).Elem()
+	if count == 0 {
+		return &res, nil
+	}
 
 	for i := 0; i < count; i++ {
-		val, err := strCodec.Decode(spec, buf)
+		val, err := strCodec.Decode(spec, r)
 		if err != nil {
 			return nil, err
 		}

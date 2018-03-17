@@ -1,7 +1,6 @@
 package composed
 
 import (
-	"bytes"
 	"io"
 	"reflect"
 
@@ -9,27 +8,34 @@ import (
 	"github.com/corebreaker/gobincodec/util"
 )
 
-type DescSliceComplex64 struct{ base.DescBase }
+type DescSliceComplex64 struct{ DescArrayComplex64 }
 
-func (*DescSliceComplex64) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
-	count := v.Len()
-
-	var out bytes.Buffer
-
-	if err := util.EncodeSize(&out, count); err != nil {
-		return err
+func (ds *DescSliceComplex64) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
+	if util.IsNil(v) {
+		return util.WriteBool(w, true)
 	}
 
-	for i := 0; i < count; i++ {
-		if err := util.EncodeNum(&out, complex64(v.Index(i).Complex())); err != nil {
-			return err
-		}
+	if err := util.WriteBool(w, false); err != nil {
+		return nil
 	}
 
-	return util.Write(w, out.Bytes())
+	return ds.DescArrayComplex64.Encode(spec, w, v)
 }
 
 func (*DescSliceComplex64) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
+	isNil, err := util.ReadBool(r)
+	if err != nil {
+		return nil, err
+	}
+
+	if isNil {
+		var val []complex64
+
+		res := reflect.ValueOf(&val).Elem()
+
+		return &res, nil
+	}
+
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err

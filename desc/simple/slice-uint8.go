@@ -1,7 +1,6 @@
 package simple
 
 import (
-	"bytes"
 	"io"
 	"reflect"
 
@@ -9,25 +8,34 @@ import (
 	"github.com/corebreaker/gobincodec/util"
 )
 
-type DescSliceUint8 struct{ base.DescBase }
+type DescSliceUint8 struct{ DescArrayUint8 }
 
-func (*DescSliceUint8) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
-	count := v.Len()
-
-	var out bytes.Buffer
-
-	if err := util.EncodeSize(&out, count); err != nil {
-		return err
+func (ds *DescSliceUint8) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
+	if util.IsNil(v) {
+		return util.WriteBool(w, true)
 	}
 
-	if err := util.Write(&out, v.Bytes()); err != nil {
+	if err := util.WriteBool(w, false); err != nil {
 		return nil
 	}
 
-	return util.Write(w, out.Bytes())
+	return ds.DescArrayUint8.Encode(spec, w, v)
 }
 
 func (*DescSliceUint8) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
+	isNil, err := util.ReadBool(r)
+	if err != nil {
+		return nil, err
+	}
+
+	if isNil {
+		var val []uint8
+
+		res := reflect.ValueOf(&val).Elem()
+
+		return &res, nil
+	}
+
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err

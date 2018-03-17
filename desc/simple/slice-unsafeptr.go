@@ -1,7 +1,6 @@
 package simple
 
 import (
-	"bytes"
 	"io"
 	"reflect"
 	"unsafe"
@@ -10,27 +9,34 @@ import (
 	"github.com/corebreaker/gobincodec/util"
 )
 
-type DescSliceUnsafePtr struct{ base.DescBase }
+type DescSliceUnsafePtr struct{ DescArrayUnsafePtr }
 
-func (*DescSliceUnsafePtr) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
-	count := v.Len()
-
-	var out bytes.Buffer
-
-	if err := util.EncodeSize(&out, count); err != nil {
-		return err
+func (ds *DescSliceUnsafePtr) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
+	if util.IsNil(v) {
+		return util.WriteBool(w, true)
 	}
 
-	for i := 0; i < count; i++ {
-		if err := util.EncodeNum(&out, uint64(v.Index(i).Pointer())); err != nil {
-			return err
-		}
+	if err := util.WriteBool(w, false); err != nil {
+		return nil
 	}
 
-	return util.Write(w, out.Bytes())
+	return ds.DescArrayUnsafePtr.Encode(spec, w, v)
 }
 
 func (*DescSliceUnsafePtr) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
+	isNil, err := util.ReadBool(r)
+	if err != nil {
+		return nil, err
+	}
+
+	if isNil {
+		var val []unsafe.Pointer
+
+		res := reflect.ValueOf(&val).Elem()
+
+		return &res, nil
+	}
+
 	size, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, err

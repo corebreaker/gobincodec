@@ -10,6 +10,7 @@ type DescBase struct {
 }
 
 func (d *DescBase) GetId() DescId                { return d.id }
+func (*DescBase) IsNil() bool                    { return false }
 func (*DescBase) Read(ISpec, io.Reader) error    { return nil }
 func (*DescBase) Write(ISpec, io.Writer) error   { return nil }
 func (*DescBase) Make(ISpec, reflect.Type) error { return nil }
