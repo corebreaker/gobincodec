@@ -9,6 +9,11 @@ var (
 	nil_value = reflect.ValueOf(nil)
 )
 
+type Serializable interface {
+	Serialize(Encoder) error
+	Deserialize(Decoder) error
+}
+
 type CodecBase interface {
 	GetType(name string) reflect.Type
 	GetNameFromType(datatype reflect.Type) string
@@ -71,7 +76,7 @@ func (self *tCodecSpec) read(r io.Reader) error {
 	return nil
 }
 
-func (self *tCodecSpec) read_at(r io.ReaderAt, offs int64) error {
+func (self *tCodecSpec) readAt(r io.ReaderAt, offs int64) error {
 	return nil
 }
 
@@ -79,11 +84,11 @@ func (self *tCodecSpec) write(w io.Writer) error {
 	return nil
 }
 
-func (self *tCodecSpec) write_at(w io.WriterAt, offs int64) error {
+func (self *tCodecSpec) writeAt(w io.WriterAt, offs int64) error {
 	return nil
 }
 
-func new_spec() *tCodecSpec {
+func newSpec() *tCodecSpec {
 	return &tCodecSpec{
 		identifiers:       make(map[uint16]*tCodecEntry),
 		forward_registry:  make(map[string]*tCodecEntry),
@@ -96,7 +101,7 @@ type tCodecBase struct {
 }
 
 func (self *tCodecBase) Reset() {
-	self.spec = new_spec()
+	self.spec = newSpec()
 }
 
 func (self *tCodecBase) GetType(name string) reflect.Type {
@@ -156,7 +161,7 @@ func (self *tCodecBase) RegisterTypeName(name string, datatype reflect.Type) {
 		id:       id,
 		name:     name,
 		datatype: datatype,
-		codec:    self.compile_type(datatype),
+		codec:    self.compileType(datatype),
 	}
 
 	self.UnRegisterName(name)

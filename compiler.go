@@ -1,7 +1,6 @@
 package bincodec
 
 import (
-	"io"
 	"reflect"
 )
 
@@ -58,6 +57,6 @@ var (
 	}
 )
 
-func (self *tCodecBase) compile_type(typ reflect.Type) iCodec {
+func (self *tCodecBase) compileType(typ reflect.Type) iCodec {
 	return nil
 }
