@@ -1,4 +1,4 @@
-package bincodec
+package gobincodec
 
 import (
     "reflect"
@@ -61,5 +61,7 @@ func (enc *tSeekedEncoder) EncodeFloat64Slice(v []float64) error       { return 
 func (enc *tSeekedEncoder) EncodeComplex64Slice(v []complex64) error   { return enc.next(enc.w.encCplx64s(v, enc.p)) }
 func (enc *tSeekedEncoder) EncodeComplex128Slice(v []complex128) error { return enc.next(enc.w.encCplx128s(v, enc.p)) }
 func (enc *tSeekedEncoder) EncodeStringSlice(v []string) error         { return enc.next(enc.w.encStrings(v, enc.p)) }
+func (enc *tSeekedEncoder) EncodePtrSlice(v []unsafe.Pointer) error    { return enc.next(enc.w.encPtrs(v, enc.p)) }
+func (enc *tSeekedEncoder) EncodeTimeSlice(v []time.Time) error        { return enc.next(enc.w.encTimes(v, enc.p)) }
 func (enc *tSeekedEncoder) EncodeSlice(v []interface{}) error          { return enc.next(enc.w.encSlice(v, enc.p)) }
 func (enc *tSeekedEncoder) EncodeSerializable(v Serializable) error    { return enc.next(enc.w.encSerial(v, enc.p)) }

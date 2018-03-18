@@ -1,6 +1,7 @@
 package composed
 
 import (
+	"bytes"
 	"io"
 	"reflect"
 
@@ -15,81 +16,90 @@ type DescValueStruct struct {
 	fields map[string]base.IDesc
 }
 
-func (dv *DescValueStruct) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
+func (dv *DescValueStruct) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
+	var out bytes.Buffer
+
 	for _, name := range dv.names {
-		if err := dv.fields[name].Encode(spec, w, v.FieldByName(name)); err != nil {
-			return err
+		if _, err := dv.fields[name].Encode(spec, &out, v.FieldByName(name)); err != nil {
+			return 0, err
 		}
 	}
 
-	return nil
+	return util.Write(w, out.Bytes())
 }
 
-func (dv *DescValueStruct) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, error) {
+func (dv *DescValueStruct) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, int, error) {
+	cnt := 0
+
 	res := reflect.New(spec.GetType(dv)).Elem()
 	for _, name := range dv.names {
-		field, err := dv.fields[name].Decode(spec, r)
+		field, n, err := dv.fields[name].Decode(spec, r)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
+		cnt += n
 		res.FieldByName(name).Set(*field)
 	}
 
-	return &res, nil
+	return &res, cnt, nil
 }
 
-func (dv *DescValueStruct) Read(spec base.ISpec, r io.Reader) error {
-	count, err := util.DecodeSize(r)
+func (dv *DescValueStruct) Read(spec base.ISpec, r io.Reader) (int, error) {
+	size, cnt, err := util.DecodeSize(r)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	for i := 0; i < count; i++ {
-		strlen, err := util.DecodeSize(r)
+	for i := 0; i < size; i++ {
+		strlen, n1, err := util.DecodeSize(r)
 		if err != nil {
-			return err
+			return 0, err
 		}
 
 		name_buf := make([]byte, strlen)
-		if err := util.Read(r, name_buf); err != nil {
-			return err
+		n2, err := util.Read(r, name_buf)
+		if err != nil {
+			return 0, err
 		}
 
 		name := string(name_buf)
-		ftype, err := spec.ReadDesc(r)
+		ftype, n3, err := spec.ReadDesc(r)
 		if err != nil {
-			return err
+			return 0, err
 		}
 
+		cnt += n1 + n2 + n3
 		dv.names = append(dv.names, name)
 		dv.fields[name] = ftype
 	}
 
-	return nil
+	return cnt, nil
 }
 
-func (dv *DescValueStruct) Write(spec base.ISpec, w io.Writer) error {
-	if err := util.EncodeSize(w, len(dv.names)); err != nil {
-		return err
+func (dv *DescValueStruct) Write(spec base.ISpec, w io.Writer) (int, error) {
+	var out bytes.Buffer
+
+	if _, err := util.EncodeSize(&out, len(dv.names)); err != nil {
+		return 0, err
 	}
 
 	for _, name := range dv.names {
 		name_buf := []byte(name)
-		if err := util.EncodeSize(w, len(name_buf)); err != nil {
-			return err
+		if _, err := util.EncodeSize(&out, len(name_buf)); err != nil {
+			return 0, err
 		}
 
-		if err := util.Write(w, name_buf); err != nil {
-			return err
+		if _, err := util.Write(&out, name_buf); err != nil {
+			return 0, err
 		}
 
-		if err := spec.WriteDesc(w, dv.fields[name]); err != nil {
-			return err
+		if _, err := spec.WriteDesc(&out, dv.fields[name]); err != nil {
+			return 0, err
 		}
 	}
 
-	return nil
+	return util.Write(w, out.Bytes())
 }
 
 func (dv *DescValueStruct) Make(spec base.ISpec, t reflect.Type) error {

@@ -10,26 +10,28 @@ import (
 
 type DescArrayInt struct{ DescArrayInt64 }
 
-func (*DescArrayInt) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
-	size, err := util.DecodeSize(r)
+func (*DescArrayInt) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, int, error) {
+	size, cnt, err := util.DecodeSize(r)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	res := reflect.New(reflect.ArrayOf(size, reflect.TypeOf(int(0)))).Elem()
 	if size == 0 {
-		return &res, nil
+		return &res, cnt, nil
 	}
 
 	for i := 0; i < size; i++ {
 		var v int64
 
-		if err := util.DecodeNum(r, &v); err != nil {
-			return nil, err
+		n, err := util.DecodeNum(r, &v)
+		if err != nil {
+			return nil, 0, err
 		}
 
+		cnt += n
 		res.Index(i).SetInt(v)
 	}
 
-	return &res, nil
+	return &res, cnt, nil
 }

@@ -1,4 +1,4 @@
-package bincodec
+package gobincodec
 
 import (
 	"io"
@@ -48,6 +48,7 @@ type Encoder interface {
 	EncodeComplex64Slice([]complex64) error
 	EncodeComplex128Slice([]complex128) error
 	EncodeStringSlice([]string) error
+	EncodePtrSlice([]unsafe.Pointer) error
 	EncodeTimeSlice([]time.Time) error
 	EncodeSlice([]interface{}) error
 	EncodeSerializable(Serializable) error
@@ -124,5 +125,7 @@ func (wr *tWriter) EncodeFloat64Slice(v []float64) error       { return nil }
 func (wr *tWriter) EncodeComplex64Slice(v []complex64) error   { return nil }
 func (wr *tWriter) EncodeComplex128Slice(v []complex128) error { return nil }
 func (wr *tWriter) EncodeStringSlice(v []string) error         { return nil }
+func (wr *tWriter) EncodePtrSlice(v []unsafe.Pointer) error    { return nil }
+func (wr *tWriter) EncodeTimeSlice(v []time.Time) error        { return nil }
 func (wr *tWriter) EncodeSlice(v []interface{}) error          { return nil }
-func (wr *tWriter) EncodeSerializable(v Serializable) error    { return nil }
+func (wr *tWriter) EncodeSerializable(v Serializable) error    { return wr.tIoBase.spec. }

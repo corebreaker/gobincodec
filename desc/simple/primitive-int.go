@@ -10,14 +10,15 @@ import (
 
 type DescPrimitiveInt struct{ DescPrimitiveInt64 }
 
-func (*DescPrimitiveInt) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
+func (*DescPrimitiveInt) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, int, error) {
 	var num int64
 
-	if err := util.DecodeNum(r, &num); err != nil {
-		return nil, err
+	cnt, err := util.DecodeNum(r, &num)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	res := reflect.ValueOf(int(num))
 
-	return &res, nil
+	return &res, cnt, nil
 }

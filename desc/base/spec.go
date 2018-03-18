@@ -6,8 +6,8 @@ import (
 )
 
 type ISpec interface {
-	ReadDesc(io.Reader) (IDesc, error)
-	WriteDesc(io.Writer, IDesc) error
+	ReadDesc(io.Reader) (IDesc, int, error)
+	WriteDesc(io.Writer, IDesc) (int, error)
 
 	DescFromType(reflect.Type) IDesc
 	DescFromId(DescId) IDesc

@@ -1,4 +1,4 @@
-package bincodec
+package gobincodec
 
 import (
 	"io"
@@ -9,6 +9,7 @@ import (
 
 type Decoder interface {
 	Decode(...interface{}) error
+	DecodeNext() (interface{}, error)
 	DecodeValue(reflect.Value) error
 	DecodeBool(*bool) error
 	DecodeByte(*byte) error
@@ -48,6 +49,7 @@ type Decoder interface {
 	DecodeComplex64Slice(*[]complex64) error
 	DecodeComplex128Slice(*[]complex128) error
 	DecodeStringSlice(*[]string) error
+	DecodePtrSlice(*[]unsafe.Pointer) error
 	DecodeTimeSlice(*[]time.Time) error
 	DecodeSlice(*[]interface{}) error
 	DecodeSerializable(Serializable) error
@@ -85,6 +87,7 @@ func (rd *tReader) ReadHeader() error {
 }
 
 func (rd *tReader) Decode(values ...interface{}) error          { return nil }
+func (rd *tReader) DecodeNext() (interface{}, error)            { return nil }
 func (rd *tReader) DecodeValue(v reflect.Value) error           { return nil }
 func (rd *tReader) DecodeBool(v *bool) error                    { return nil }
 func (rd *tReader) DecodeByte(v *byte) error                    { return nil }
@@ -124,5 +127,7 @@ func (rd *tReader) DecodeFloat64Slice(v *[]float64) error       { return nil }
 func (rd *tReader) DecodeComplex64Slice(v *[]complex64) error   { return nil }
 func (rd *tReader) DecodeComplex128Slice(v *[]complex128) error { return nil }
 func (rd *tReader) DecodeStringSlice(v *[]string) error         { return nil }
+func (rd *tReader) DecodePtrSlice(v *[]unsafe.Pointer) error    { return nil }
+func (rd *tReader) DecodeTimeSlice(v *[]time.Time) error        { return nil }
 func (rd *tReader) DecodeSlice(v *[]interface{}) error          { return nil }
 func (rd *tReader) DecodeSerializable(v Serializable) error     { return nil }

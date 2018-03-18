@@ -15,58 +15,74 @@ type DescValueSlice struct {
 	value base.IDesc
 }
 
-func (dv *DescValueSlice) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
+func (dv *DescValueSlice) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
+	if util.IsNil(v) {
+		return util.WriteBool(w, true)
+	}
+
+	cnt1, err := util.WriteBool(w, false)
+	if err != nil {
+		return 0, err
+	}
+
 	var out bytes.Buffer
 
 	count := v.Len()
-	if err := util.EncodeSize(&out, count); err != nil {
-		return err
+	if _, err := util.EncodeSize(&out, count); err != nil {
+		return 0, err
 	}
 
 	for i := 0; i < count; i++ {
-		if err := dv.value.Encode(spec, &out, v.Index(i)); err != nil {
-			return err
+		if _, err := dv.value.Encode(spec, &out, v.Index(i)); err != nil {
+			return 0, err
 		}
 	}
 
-	return util.Write(w, out.Bytes())
+	cnt2, err := util.Write(w, out.Bytes())
+	if err != nil {
+		return 0, err
+	}
+
+	return cnt1 + cnt2, nil
 }
 
-func (dv *DescValueSlice) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, error) {
-	size, err := util.DecodeSize(r)
+func (dv *DescValueSlice) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, int, error) {
+	size, cnt, err := util.DecodeSize(r)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	if size == 0 {
 		res := reflect.Zero(spec.GetType(dv))
 
-		return &res, nil
+		return &res, cnt, nil
 	}
 
 	res := reflect.MakeSlice(spec.GetType(dv), size, size)
 
 	for i := 0; i < size; i++ {
-		value, err := dv.value.Decode(spec, r)
+		value, n, err := dv.value.Decode(spec, r)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
+		cnt += n
 		res.Index(i).Set(*value)
 	}
 
-	return &res, nil
+	return &res, cnt, nil
 }
 
-func (dv *DescValueSlice) Read(spec base.ISpec, r io.Reader) error {
+func (dv *DescValueSlice) Read(spec base.ISpec, r io.Reader) (int, error) {
 	var err error
+	var cnt int
 
-	dv.value, err = spec.ReadDesc(r)
+	dv.value, cnt, err = spec.ReadDesc(r)
 
-	return err
+	return cnt, err
 }
 
-func (dv *DescValueSlice) Write(spec base.ISpec, w io.Writer) error {
+func (dv *DescValueSlice) Write(spec base.ISpec, w io.Writer) (int, error) {
 	return spec.WriteDesc(w, dv.value)
 }
 

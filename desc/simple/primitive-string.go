@@ -11,34 +11,35 @@ import (
 
 type DescPrimitiveString struct{ base.DescBase }
 
-func (*DescPrimitiveString) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
+func (*DescPrimitiveString) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	var out bytes.Buffer
 
 	value := []byte(v.String())
-	if err := util.EncodeSize(&out, len(value)); err != nil {
-		return err
+	if _, err := util.EncodeSize(&out, len(value)); err != nil {
+		return 0, err
 	}
 
-	if err := util.Write(&out, value); err != nil {
-		return err
+	if _, err := util.Write(&out, value); err != nil {
+		return 0, err
 	}
 
 	return util.Write(w, out.Bytes())
 }
 
-func (*DescPrimitiveString) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
-	size, err := util.DecodeSize(r)
+func (*DescPrimitiveString) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, int, error) {
+	size, cnt1, err := util.DecodeSize(r)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	buf := make([]byte, size)
 
-	if err := util.Read(r, buf); err != nil {
-		return nil, err
+	cnt2, err := util.Read(r, buf)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	res := reflect.ValueOf(string(buf))
 
-	return &res, nil
+	return &res, cnt1 + cnt2, nil
 }

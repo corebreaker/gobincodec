@@ -10,60 +10,69 @@ import (
 
 type DescValueInterface struct{ base.DescBase }
 
-func (dv *DescValueInterface) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
+func (dv *DescValueInterface) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	if util.IsNil(v) {
 		return util.WriteBool(w, true)
 	}
 
-	if err := util.WriteBool(w, false); err != nil {
-		return nil
+	cnt1, err := util.WriteBool(w, false)
+	if err != nil {
+		return 0, err
 	}
 
 	desc := spec.DescFromType(v.Type())
-	if err := util.EncodeNum(w, desc.GetId()); err != nil {
-		return err
+
+	cnt2, err := util.EncodeNum(w, desc.GetId())
+	if err != nil {
+		return 0, err
 	}
 
 	if v.IsNil() {
-		return nil
+		return cnt1 + cnt2, nil
 	}
 
-	return desc.Encode(spec, w, v.Elem())
+	cnt3, err := desc.Encode(spec, w, v.Elem())
+	if err != nil {
+		return 0, err
+	}
+
+	return cnt1 + cnt2 + cnt3, nil
 }
 
-func (dv *DescValueInterface) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, error) {
-	isNil, err := util.ReadBool(r)
+func (dv *DescValueInterface) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, int, error) {
+	isNil, cnt1, err := util.ReadBool(r)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	if isNil {
 		res := reflect.Zero(spec.GetType(dv))
 
-		return &res, nil
+		return &res, cnt1, nil
 	}
 
 	var id base.DescId
 
-	if err := util.DecodeNum(r, &id); err != nil {
-		return nil, err
+	cnt2, err := util.DecodeNum(r, &id)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	desc := spec.DescFromId(id)
 	res := reflect.New(spec.GetType(dv)).Elem()
 
 	if desc.IsNil() {
-		return &res, nil
+		return &res, cnt1 + cnt2, nil
 	}
 
-	value, err := desc.Decode(spec, r)
+	value, cnt3, err := desc.Decode(spec, r)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	res.Set(*value)
 
-	return &res, nil
+	return &res, cnt1 + cnt2 + cnt3, nil
 }
 
 func NewInterfaceDesc(id base.DescId) base.IDesc {

@@ -1,4 +1,4 @@
-package bincodec
+package gobincodec
 
 import (
     "io"
@@ -61,6 +61,8 @@ func (ea *tEncAt) encFloat64s(v []float64, at int64) (int, error)    { return 0,
 func (ea *tEncAt) encCplx64s(v []complex64, at int64) (int, error)   { return 0, nil }
 func (ea *tEncAt) encCplx128s(v []complex128, at int64) (int, error) { return 0, nil }
 func (ea *tEncAt) encStrings(v []string, at int64) (int, error)      { return 0, nil }
+func (ea *tEncAt) encPtrs(v []unsafe.Pointer, at int64) (int, error) { return 0, nil }
+func (ea *tEncAt) encTimes(v []time.Time, at int64) (int, error)     { return 0, nil }
 func (ea *tEncAt) encSlice(v []interface{}, at int64) (int, error)   { return 0, nil }
 func (ea *tEncAt) encSerial(v Serializable, at int64) (int, error)   { return 0, nil }
 
@@ -112,6 +114,8 @@ type WriterAt interface {
     EncodeComplex64SliceAt([]complex64, int64) error
     EncodeComplex128SliceAt([]complex128, int64) error
     EncodeStringSliceAt([]string, int64) error
+    EncodePtrSliceAt([]unsafe.Pointer, int64) error
+    EncodeTimeSliceAt([]time.Time, int64) error
     EncodeSliceAt([]interface{}, int64) error
     EncodeSerializableAt(Serializable, int64) error
 }
@@ -179,5 +183,7 @@ func (wa *tWriterAt) EncodeFloat64SliceAt(v []float64, p int64) error       { re
 func (wa *tWriterAt) EncodeComplex64SliceAt(v []complex64, p int64) error   { return gerr(wa.enc.encCplx64s(v, p)) }
 func (wa *tWriterAt) EncodeComplex128SliceAt(v []complex128, p int64) error { return gerr(wa.enc.encCplx128s(v, p)) }
 func (wa *tWriterAt) EncodeStringSliceAt(v []string, p int64) error         { return gerr(wa.enc.encStrings(v, p)) }
+func (wa *tWriterAt) EncodePtrSliceAt(v []unsafe.Pointer, p int64) error    { return gerr(wa.enc.encPtrs(v, p)) }
+func (wa *tWriterAt) EncodeTimeSliceAt(v []time.Time, p int64) error        { return gerr(wa.enc.encTimes(v, p)) }
 func (wa *tWriterAt) EncodeSliceAt(v []interface{}, p int64) error          { return gerr(wa.enc.encSlice(v, p)) }
 func (wa *tWriterAt) EncodeSerializableAt(v Serializable, p int64) error    { return gerr(wa.enc.encSerial(v, p)) }

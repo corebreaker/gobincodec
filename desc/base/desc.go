@@ -11,10 +11,10 @@ type IDesc interface {
 	GetId() DescId
 	IsNil() bool
 
-	Encode(ISpec, io.Writer, reflect.Value) error
-	Decode(ISpec, io.Reader) (*reflect.Value, error)
+	Encode(ISpec, io.Writer, reflect.Value) (int, error)
+	Decode(ISpec, io.Reader) (*reflect.Value, int, error)
 
-	Read(ISpec, io.Reader) error
-	Write(ISpec, io.Writer) error
+	Read(ISpec, io.Reader) (int, error)
+	Write(ISpec, io.Writer) (int, error)
 	Make(ISpec, reflect.Type) error
 }

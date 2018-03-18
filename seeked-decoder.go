@@ -1,4 +1,4 @@
- package bincodec
+ package gobincodec
 
 import (
     "reflect"
@@ -22,6 +22,7 @@ func (dec *tSeekedDecoder) Decode(values ...interface{}) error {
     return nil
 }
 
+func (dec *tSeekedDecoder) DecodeNext() (interface{}, error)            { return dec.next2(dec.r.decNext(dec.p)) }
 func (dec *tSeekedDecoder) DecodeValue(v reflect.Value) error           { return dec.next(dec.r.decValue(v, dec.p)) }
 func (dec *tSeekedDecoder) DecodeBool(v *bool) error                    { return dec.next(dec.r.decBool(v, dec.p)) }
 func (dec *tSeekedDecoder) DecodeByte(v *byte) error                    { return dec.next(dec.r.decByte(v, dec.p)) }
@@ -61,5 +62,7 @@ func (dec *tSeekedDecoder) DecodeFloat64Slice(v *[]float64) error       { return
 func (dec *tSeekedDecoder) DecodeComplex64Slice(v *[]complex64) error   { return dec.next(dec.r.decCplx64s(v, dec.p)) }
 func (dec *tSeekedDecoder) DecodeComplex128Slice(v *[]complex128) error { return dec.next(dec.r.decCplx128s(v, dec.p)) }
 func (dec *tSeekedDecoder) DecodeStringSlice(v *[]string) error         { return dec.next(dec.r.decStrings(v, dec.p)) }
+func (dec *tSeekedDecoder) DecodePtrSlice(v *[]unsafe.Pointer) error    { return dec.next(dec.r.decPtrs(v, dec.p)) }
+func (dec *tSeekedDecoder) DecodeTimeSlice(v *[]time.Time) error        { return dec.next(dec.r.decTimes(v, dec.p)) }
 func (dec *tSeekedDecoder) DecodeSlice(v *[]interface{}) error          { return dec.next(dec.r.decSlice(v, dec.p)) }
 func (dec *tSeekedDecoder) DecodeSerializable(v Serializable) error     { return dec.next(dec.r.decSerial(v, dec.p)) }

@@ -10,22 +10,28 @@ import (
 
 type DescSliceInt8 struct{ DescArrayInt8 }
 
-func (ds *DescSliceInt8) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
+func (ds *DescSliceInt8) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	if util.IsNil(v) {
 		return util.WriteBool(w, true)
 	}
 
-	if err := util.WriteBool(w, false); err != nil {
-		return nil
+	cnt1, err := util.WriteBool(w, false)
+	if err != nil {
+		return 0, err
 	}
 
-	return ds.DescArrayInt8.Encode(spec, w, v)
+	cnt2, err := ds.DescArrayInt8.Encode(spec, w, v)
+	if err != nil {
+		return 0, err
+	}
+
+	return cnt1 + cnt2, nil
 }
 
-func (*DescSliceInt8) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
-	isNil, err := util.ReadBool(r)
+func (*DescSliceInt8) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, int, error) {
+	isNil, cnt1, err := util.ReadBool(r)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	if isNil {
@@ -33,17 +39,19 @@ func (*DescSliceInt8) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) 
 
 		res := reflect.ValueOf(&val).Elem()
 
-		return &res, nil
+		return &res, cnt1, nil
 	}
 
-	size, err := util.DecodeSize(r)
+	size, cnt2, err := util.DecodeSize(r)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	buf := make([]byte, size)
-	if err := util.Read(r, buf); err != nil {
-		return nil, err
+
+	cnt3, err := util.Read(r, buf)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	in := make([]int8, size)
@@ -53,5 +61,5 @@ func (*DescSliceInt8) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) 
 
 	res := reflect.ValueOf(in)
 
-	return &res, nil
+	return &res, cnt1 + cnt2 + cnt3, nil
 }

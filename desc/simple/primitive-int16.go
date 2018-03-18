@@ -10,18 +10,19 @@ import (
 
 type DescPrimitiveInt16 struct{ base.DescBase }
 
-func (*DescPrimitiveInt16) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
+func (*DescPrimitiveInt16) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	return util.EncodeNum(w, int16(v.Int()))
 }
 
-func (*DescPrimitiveInt16) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
+func (*DescPrimitiveInt16) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, int, error) {
 	var num int16
 
-	if err := util.DecodeNum(r, &num); err != nil {
-		return nil, err
+	cnt, err := util.DecodeNum(r, &num)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	res := reflect.ValueOf(num)
 
-	return &res, nil
+	return &res, cnt, nil
 }

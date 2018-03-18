@@ -11,43 +11,45 @@ import (
 
 type DescArrayInt8 struct{ base.DescBase }
 
-func (*DescArrayInt8) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
+func (*DescArrayInt8) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	count := v.Len()
 
 	var out bytes.Buffer
 
-	if err := util.EncodeSize(&out, count); err != nil {
-		return err
+	if _, err := util.EncodeSize(&out, count); err != nil {
+		return 0, err
 	}
 
 	for i := 0; i < count; i++ {
 		if err := util.WriteByte(&out, byte(v.Index(i).Int())); err != nil {
-			return err
+			return 0, err
 		}
 	}
 
 	return util.Write(w, out.Bytes())
 }
 
-func (*DescArrayInt8) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
-	size, err := util.DecodeSize(r)
+func (*DescArrayInt8) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, int, error) {
+	size, cnt1, err := util.DecodeSize(r)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	res := reflect.New(reflect.ArrayOf(size, reflect.TypeOf(int8(0)))).Elem()
 	if size == 0 {
-		return &res, nil
+		return &res, cnt1, nil
 	}
 
 	buf := make([]byte, size)
-	if err := util.Read(r, buf); err != nil {
-		return nil, err
+
+	cnt2, err := util.Read(r, buf)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	for i, b := range buf {
 		res.Index(i).SetInt(int64(b))
 	}
 
-	return &res, nil
+	return &res, cnt1 + cnt2, nil
 }

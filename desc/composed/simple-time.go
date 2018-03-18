@@ -11,11 +11,11 @@ import (
 
 type DescSimpleTime struct{ base.DescBase }
 
-func (*DescSimpleTime) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
+func (*DescSimpleTime) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	value := v.Interface().(time.Time)
 	buf, err := util.MarshallTime(&value)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	res := append(buf, 0)
@@ -25,25 +25,28 @@ func (*DescSimpleTime) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error 
 	return util.Write(w, res)
 }
 
-func (*DescSimpleTime) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
+func (*DescSimpleTime) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, int, error) {
 	var size_buf [1]byte
 
-	if err := util.Read(r, size_buf[:]); err != nil {
-		return nil, err
+	cnt1, err := util.Read(r, size_buf[:])
+	if err != nil {
+		return nil, 0, err
 	}
 
 	buf := make([]byte, size_buf[0])
-	if err := util.Read(r, buf); err != nil {
-		return nil, err
+
+	cnt2, err := util.Read(r, buf)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	var t time.Time
 
 	if err := util.UnmarshalTime(buf, &t); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	res := reflect.ValueOf(t)
 
-	return &res, nil
+	return &res, cnt1 + cnt2, nil
 }

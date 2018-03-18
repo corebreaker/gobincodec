@@ -1,4 +1,4 @@
-package bincodec
+package gobincodec
 
 import (
     "io"
@@ -21,7 +21,8 @@ func (da *tDecAt) seek(p int64) Decoder {
     }
 }
 
-func (da *tDecAt) decode(v interface{}, at int64) (int, error)         { return 0, nil }
+func (da *tDecAt) decode(v interface{}, at int64) (int, error)        { return 0, nil }
+func (da *tDecAt) decNext(at int64) (interface{}, int, error)         { return nil, 0, nil }
 func (da *tDecAt) decValue(v reflect.Value, at int64) (int, error)    { return 0, nil }
 func (da *tDecAt) decBool(v *bool, at int64) (int, error)             { return 0, nil }
 func (da *tDecAt) decByte(v *byte, at int64) (int, error)             { return 0, nil }
@@ -61,6 +62,8 @@ func (da *tDecAt) decFloat64s(v *[]float64, at int64) (int, error)    { return 0
 func (da *tDecAt) decCplx64s(v *[]complex64, at int64) (int, error)   { return 0, nil }
 func (da *tDecAt) decCplx128s(v *[]complex128, at int64) (int, error) { return 0, nil }
 func (da *tDecAt) decStrings(v *[]string, at int64) (int, error)      { return 0, nil }
+func (da *tDecAt) decPtrs(v *[]unsafe.Pointer, at int64) (int, error) { return 0, nil }
+func (da *tDecAt) decTimes(v *[]time.Time, at int64) (int, error)     { return 0, nil }
 func (da *tDecAt) decSlice(v *[]interface{}, at int64) (int, error)   { return 0, nil }
 func (da *tDecAt) decSerial(v Serializable, at int64) (int, error)    { return 0, nil }
 
@@ -73,6 +76,7 @@ type ReaderAt interface {
     CloneReaderAt(io.ReaderAt) ReaderAt
 
     DecodeAt(interface{}, int64) error
+    DecodeNextAt(int64) (interface{}, error)
     DecodeValueAt(reflect.Value, int64) error
     DecodeBoolAt(*bool, int64) error
     DecodeByteAt(*byte, int64) error
@@ -112,6 +116,8 @@ type ReaderAt interface {
     DecodeComplex64SliceAt(*[]complex64, int64) error
     DecodeComplex128SliceAt(*[]complex128, int64) error
     DecodeStringSliceAt(*[]string, int64) error
+    DecodePtrSliceAt(*[]unsafe.Pointer, int64) error
+    DecodeTimeSliceAt(*[]time.Time, int64) error
     DecodeSliceAt(*[]interface{}, int64) error
     DecodeSerializableAt(Serializable, int64) error
 }
@@ -140,6 +146,7 @@ func (ra *tReaderAt) CloneReaderAt(r io.ReaderAt) ReaderAt {
 }
 
 func (ra *tReaderAt) DecodeAt(v interface{}, p int64) error                  { return gerr(ra.dec.decode(v, p)) }
+func (ra *tReaderAt) DecodeNextAt(p int64) (interface{}, error)              { return gerr2(ra.dec.decode(v, p)) }
 func (ra *tReaderAt) DecodeValueAt(v reflect.Value, p int64) error           { return gerr(ra.dec.decValue(v, p)) }
 func (ra *tReaderAt) DecodeBoolAt(v *bool, p int64) error                    { return gerr(ra.dec.decBool(v, p)) }
 func (ra *tReaderAt) DecodeByteAt(v *byte, p int64) error                    { return gerr(ra.dec.decByte(v, p)) }
@@ -179,5 +186,7 @@ func (ra *tReaderAt) DecodeFloat64SliceAt(v *[]float64, p int64) error       { r
 func (ra *tReaderAt) DecodeComplex64SliceAt(v *[]complex64, p int64) error   { return gerr(ra.dec.decCplx64s(v, p)) }
 func (ra *tReaderAt) DecodeComplex128SliceAt(v *[]complex128, p int64) error { return gerr(ra.dec.decCplx128s(v, p)) }
 func (ra *tReaderAt) DecodeStringSliceAt(v *[]string, p int64) error         { return gerr(ra.dec.decStrings(v, p)) }
+func (ra *tReaderAt) DecodePtrSliceAt(v *[]unsafe.Pointer, p int64) error    { return gerr(ra.dec.decPtrs(v, p)) }
+func (ra *tReaderAt) DecodeTimeSliceAt(v *[]time.Time, p int64) error        { return gerr(ra.dec.decTimes(v, p)) }
 func (ra *tReaderAt) DecodeSliceAt(v *[]interface{}, p int64) error          { return gerr(ra.dec.decSlice(v, p)) }
 func (ra *tReaderAt) DecodeSerializableAt(v Serializable, p int64) error     { return gerr(ra.dec.decSerial(v, p)) }

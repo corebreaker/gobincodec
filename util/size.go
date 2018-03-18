@@ -9,11 +9,13 @@ var (
 	masks = [8]byte{0xFF, 0xFF, 0xFF, 0xFF, 0x1F, 0x1F, 0x0F, 0x07}
 )
 
-func DecodeSize(r io.Reader) (int, error) {
+func DecodeSize(r io.Reader) (int, int, error) {
 	var code_buf [1]byte
+	var sz2 int
 
-	if err := Read(r, code_buf[:]); err != nil {
-		return 0, err
+	sz1, err := Read(r, code_buf[:])
+	if err != nil {
+		return 0, 0, err
 	}
 
 	code := code_buf[0]
@@ -21,8 +23,9 @@ func DecodeSize(r io.Reader) (int, error) {
 
 	b := make([]byte, size)
 	if size > 0 {
-		if err := Read(r, b); err != nil {
-			return 0, err
+		sz2, err = Read(r, b)
+		if err != nil {
+			return 0, 0, err
 		}
 	}
 
@@ -65,10 +68,10 @@ func DecodeSize(r io.Reader) (int, error) {
 		res = (res << 8) | uint64(digit)
 	}
 
-	return int(res), nil
+	return int(res), sz1 + sz2, nil
 }
 
-func EncodeSize(w io.Writer, size int) error {
+func EncodeSize(w io.Writer, size int) (int, error) {
 	var buf []byte
 
 	sz := uint64(size)

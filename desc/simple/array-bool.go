@@ -11,13 +11,13 @@ import (
 
 type DescArrayBool struct{ base.DescBase }
 
-func (*DescArrayBool) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
+func (*DescArrayBool) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	count := v.Len()
 
 	var out bytes.Buffer
 
-	if err := util.EncodeSize(&out, count); err != nil {
-		return err
+	if _, err := util.EncodeSize(&out, count); err != nil {
+		return 0, err
 	}
 
 	if count > 0 {
@@ -30,7 +30,7 @@ func (*DescArrayBool) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
 				if pos == 0 {
 					current |= byte(1)
 					if err := util.WriteByte(&out, current); err != nil {
-						return err
+						return 0, err
 					}
 
 					pos, current = 7, 0
@@ -43,7 +43,7 @@ func (*DescArrayBool) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
 
 		if pos != 7 {
 			if err := util.WriteByte(&out, current); err != nil {
-				return err
+				return 0, err
 			}
 		}
 	}
@@ -51,21 +51,22 @@ func (*DescArrayBool) Encode(_ base.ISpec, w io.Writer, v reflect.Value) error {
 	return util.Write(w, out.Bytes())
 }
 
-func (*DescArrayBool) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) {
-	size, err := util.DecodeSize(r)
+func (*DescArrayBool) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, int, error) {
+	size, cnt1, err := util.DecodeSize(r)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	res := reflect.New(reflect.ArrayOf(size, reflect.TypeOf(false))).Elem()
 	if size == 0 {
-		return &res, nil
+		return &res, cnt1, nil
 	}
 
 	buf := make([]byte, (size+7)/8)
 
-	if err := util.Read(r, buf); err != nil {
-		return nil, err
+	cnt2, err := util.Read(r, buf)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	var current byte
@@ -82,5 +83,5 @@ func (*DescArrayBool) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, error) 
 		pos--
 	}
 
-	return &res, nil
+	return &res, cnt1 + cnt2, nil
 }

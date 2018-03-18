@@ -14,50 +14,57 @@ type DescValuePointer struct {
 	elem base.IDesc
 }
 
-func (dv *DescValuePointer) Encode(spec base.ISpec, w io.Writer, v reflect.Value) error {
+func (dv *DescValuePointer) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	if util.IsNil(v) {
 		return util.WriteBool(w, true)
 	}
 
-	if err := util.WriteBool(w, false); err != nil {
-		return nil
+	cnt1, err := util.WriteBool(w, false)
+	if err != nil {
+		return 0, err
 	}
 
-	return dv.elem.Encode(spec, w, v.Elem())
+	cnt2, err := dv.elem.Encode(spec, w, v.Elem())
+	if err != nil {
+		return 0, err
+	}
+
+	return cnt1 + cnt2, nil
 }
 
-func (dv *DescValuePointer) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, error) {
-	isNil, err := util.ReadBool(r)
+func (dv *DescValuePointer) Decode(spec base.ISpec, r io.Reader) (*reflect.Value, int, error) {
+	isNil, cnt1, err := util.ReadBool(r)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	if isNil {
 		res := reflect.Zero(spec.GetType(dv))
 
-		return &res, nil
+		return &res, cnt1, nil
 	}
 
-	value, err := dv.elem.Decode(spec, r)
+	value, cnt2, err := dv.elem.Decode(spec, r)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	res := reflect.New(spec.GetType(dv.elem))
 	res.Elem().Set(*value)
 
-	return &res, nil
+	return &res, cnt1 + cnt2, nil
 }
 
-func (dv *DescValuePointer) Read(spec base.ISpec, r io.Reader) error {
+func (dv *DescValuePointer) Read(spec base.ISpec, r io.Reader) (int, error) {
 	var err error
+    var cnt int
 
-	dv.elem, err = spec.ReadDesc(r)
+	dv.elem, cnt, err = spec.ReadDesc(r)
 
-	return err
+	return cnt, err
 }
 
-func (dv *DescValuePointer) Write(spec base.ISpec, w io.Writer) error {
+func (dv *DescValuePointer) Write(spec base.ISpec, w io.Writer) (int, error) {
 	return spec.WriteDesc(w, dv.elem)
 }
 
