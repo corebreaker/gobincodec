@@ -11,6 +11,14 @@ import (
 
 type DescArrayInt64 struct{ base.DescBase }
 
+func (*DescArrayInt64) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescArrayInt64) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (*DescArrayInt64) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	count := v.Len()
 

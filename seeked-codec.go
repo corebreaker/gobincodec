@@ -16,7 +16,7 @@ func (self *tSeekedCodec) next(n int, err error) error {
 
 func (self *tSeekedCodec) next2(r interface{}, n int, err error) (interface{}, error) {
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	self.p += int64(n)

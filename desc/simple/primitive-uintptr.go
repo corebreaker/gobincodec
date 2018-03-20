@@ -10,6 +10,35 @@ import (
 
 type DescPrimitiveUintptr struct{ DescPrimitiveUint64 }
 
+func (*DescPrimitiveUintptr) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescPrimitiveUintptr) Convert(reflect.Value, reflect.Type) *reflect.Value {
+	defer util.DiscardPanic()
+
+	if v.Kind() == reflect.String {
+		i, err := strconv.Atoi(v.String())
+		if err != nil {
+			return nil
+		}
+
+		res := reflect.ValueOf(uintptr(i))
+
+		return &res
+	}
+
+	i, ok := util.GetUint(b)
+	if !ok {
+		return nil
+	}
+
+	res := reflect.ValueOf(uintptr(i))
+
+	return &res
+
+}
+
 func (*DescPrimitiveUintptr) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, int, error) {
 	var num uint64
 

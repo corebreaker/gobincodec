@@ -10,6 +10,14 @@ import (
 
 type DescPrimitiveFloat32 struct{ base.DescBase }
 
+func (*DescPrimitiveFloat32) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescPrimitiveFloat32) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (*DescPrimitiveFloat32) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	return util.EncodeNum(w, float32(v.Float()))
 }

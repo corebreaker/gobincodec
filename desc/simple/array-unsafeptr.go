@@ -12,6 +12,14 @@ import (
 
 type DescArrayUnsafePtr struct{ base.DescBase }
 
+func (*DescArrayUnsafePtr) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescArrayUnsafePtr) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (*DescArrayUnsafePtr) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	count := v.Len()
 

@@ -3,6 +3,7 @@ package simple
 import (
 	"io"
 	"reflect"
+	"strconv"
 	"unsafe"
 
 	"github.com/corebreaker/gobincodec/desc/base"
@@ -10,6 +11,58 @@ import (
 )
 
 type DescSliceUnsafePtr struct{ DescArrayUnsafePtr }
+
+func (ds *DescSliceUnsafePtr) TypeEquals(t reflect.Type) bool {
+	return (t.Kind() == reflect.Slice) && (t.Elem().Kind() == reflect.UnsafePointer)
+}
+
+func (ds *DescSliceUnsafePtr) Convert(v reflect.Value) *reflect.Value {
+	if !v.IsValid() {
+		return nil
+	}
+
+	t := reflect.SliceOf(reflect.TypeOf(unsafe.Pointer(0)))
+	if v.IsNil() {
+		res := reflect.Zero(t)
+
+		return &res
+	}
+
+	for v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
+	if ds.TypeEquals(v.Type()) {
+		return &v
+	}
+
+	switch v.Kind() {
+	case reflect.Array, reflect.Slice:
+	default:
+		res := reflect.MakeSlice(t, 1, 1)
+		val := unsafePtrCodec.Convert(v)
+		if val == nil {
+			return nil
+		}
+
+		res.Set(*val)
+
+		return &res
+	}
+
+	sz := v.Len()
+	res := reflect.MakeSlice(t, sz, v.Cap())
+	for i := 0; i < sz; i++ {
+		val := unsafePtrCodec.Convert(v.Index(i))
+		if val == nil {
+			return nil
+		}
+
+		res.Index(i).Set(*val)
+	}
+
+	return &res
+}
 
 func (ds *DescSliceUnsafePtr) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	if util.IsNil(v) {

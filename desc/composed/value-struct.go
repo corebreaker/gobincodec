@@ -16,6 +16,14 @@ type DescValueStruct struct {
 	fields map[string]base.IDesc
 }
 
+func (dv *DescValueStruct) TypeEquals(reflect.Type) bool {
+
+}
+
+func (dv *DescValueStruct) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (dv *DescValueStruct) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	var out bytes.Buffer
 

@@ -10,6 +10,8 @@ type DescId uint16
 type IDesc interface {
 	GetId() DescId
 	IsNil() bool
+	TypeEquals(reflect.Type) bool
+	Convert(reflect.Value, reflect.Type) *reflect.Value
 
 	Encode(ISpec, io.Writer, reflect.Value) (int, error)
 	Decode(ISpec, io.Reader) (*reflect.Value, int, error)

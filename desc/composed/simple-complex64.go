@@ -10,6 +10,14 @@ import (
 
 type DescSimpleComplex64 struct{ base.DescBase }
 
+func (*DescSimpleComplex64) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescSimpleComplex64) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (*DescSimpleComplex64) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	return util.EncodeNum(w, complex64(v.Complex()))
 }

@@ -2,9 +2,8 @@ package gobincodec
 
 import (
 	"reflect"
-
 	//"github.com/corebreaker/gobincodec/desc"
-	"github.com/corebreaker/gobincodec/desc/base"
+	//"github.com/corebreaker/gobincodec/desc/base"
 )
 
 type Serializable interface {
@@ -86,11 +85,7 @@ func (self *tCodecBase) RegisterName(name string, value interface{}) {
 }
 
 func (self *tCodecBase) RegisterTypeName(name string, datatype reflect.Type) {
-	id := self.spec.next
-	self.spec.next++
-
 	res := &tCodecEntry{
-		id:       id,
 		name:     name,
 		datatype: datatype,
 		codec:    self.compileType(datatype),
@@ -101,7 +96,7 @@ func (self *tCodecBase) RegisterTypeName(name string, datatype reflect.Type) {
 
 	self.spec.forward_registry[name] = res
 	self.spec.backward_registry[datatype] = res
-	self.spec.identifiers[id] = res
+	self.spec.identifiers[res.codec.GetId()] = res
 }
 
 func (self *tCodecBase) UnRegister(value interface{}) string {
@@ -111,7 +106,7 @@ func (self *tCodecBase) UnRegister(value interface{}) string {
 func (self *tCodecBase) unregister(entry *tCodecEntry) {
 	delete(self.spec.forward_registry, entry.name)
 	delete(self.spec.backward_registry, entry.datatype)
-	delete(self.spec.identifiers, entry.id)
+	delete(self.spec.identifiers, entry.codec.GetId())
 }
 
 func (self *tCodecBase) UnRegisterType(datatype reflect.Type) string {

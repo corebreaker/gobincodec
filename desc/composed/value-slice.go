@@ -15,6 +15,14 @@ type DescValueSlice struct {
 	value base.IDesc
 }
 
+func (dv *DescValueSlice) TypeEquals(reflect.Type) bool {
+
+}
+
+func (dv *DescValueSlice) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (dv *DescValueSlice) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	if util.IsNil(v) {
 		return util.WriteBool(w, true)

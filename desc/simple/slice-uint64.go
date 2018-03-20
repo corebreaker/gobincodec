@@ -10,6 +10,14 @@ import (
 
 type DescSliceUint64 struct{ DescArrayUint64 }
 
+func (ds *DescSliceUint64) TypeEquals(reflect.Type) bool {
+
+}
+
+func (ds *DescSliceUint64) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (ds *DescSliceUint64) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	if util.IsNil(v) {
 		return util.WriteBool(w, true)

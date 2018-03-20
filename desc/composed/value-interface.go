@@ -10,6 +10,14 @@ import (
 
 type DescValueInterface struct{ base.DescBase }
 
+func (dv *DescValueInterface) TypeEquals(reflect.Type) bool {
+
+}
+
+func (dv *DescValueInterface) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (dv *DescValueInterface) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	if util.IsNil(v) {
 		return util.WriteBool(w, true)
@@ -22,7 +30,7 @@ func (dv *DescValueInterface) Encode(spec base.ISpec, w io.Writer, v reflect.Val
 
 	desc := spec.DescFromType(v.Type())
 
-	cnt2, err := util.EncodeNum(w, desc.GetId())
+	cnt2, err := base.WriteIdFromDesc(w, desc)
 	if err != nil {
 		return 0, err
 	}
@@ -51,14 +59,11 @@ func (dv *DescValueInterface) Decode(spec base.ISpec, r io.Reader) (*reflect.Val
 		return &res, cnt1, nil
 	}
 
-	var id base.DescId
-
-	cnt2, err := util.DecodeNum(r, &id)
+	desc, cnt2, err := base.ReadDescFromSpec(r, spec)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	desc := spec.DescFromId(id)
 	res := reflect.New(spec.GetType(dv)).Elem()
 
 	if desc.IsNil() {

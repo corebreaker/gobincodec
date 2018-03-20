@@ -9,9 +9,15 @@ import (
 	"github.com/corebreaker/gobincodec/util"
 )
 
-var strCodec = new(DescPrimitiveBool)
-
 type DescArrayString struct{ base.DescBase }
+
+func (*DescArrayString) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescArrayString) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
 
 func (*DescArrayString) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	count := v.Len()

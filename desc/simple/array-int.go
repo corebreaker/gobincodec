@@ -10,6 +10,14 @@ import (
 
 type DescArrayInt struct{ DescArrayInt64 }
 
+func (*DescArrayInt) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescArrayInt) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (*DescArrayInt) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, int, error) {
 	size, cnt, err := util.DecodeSize(r)
 	if err != nil {

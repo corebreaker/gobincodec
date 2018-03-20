@@ -14,6 +14,14 @@ var timeCodec = new(DescSimpleTime)
 
 type DescArrayTime struct{ base.DescBase }
 
+func (*DescArrayTime) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescArrayTime) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (*DescArrayTime) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	count := v.Len()
 

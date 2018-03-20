@@ -16,6 +16,14 @@ type DescValueMap struct {
 	value base.IDesc
 }
 
+func (dv *DescValueMap) TypeEquals(reflect.Type) bool {
+
+}
+
+func (dv *DescValueMap) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (dv *DescValueMap) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	if util.IsNil(v) {
 		return util.WriteBool(w, true)

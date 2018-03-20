@@ -11,6 +11,14 @@ import (
 
 type DescPrimitiveUnsafePtr struct{ base.DescBase }
 
+func (*DescPrimitiveUnsafePtr) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescPrimitiveUnsafePtr) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (*DescPrimitiveUnsafePtr) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	return util.EncodeNum(w, uint64(v.Pointer()))
 }

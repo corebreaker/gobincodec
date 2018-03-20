@@ -11,6 +11,14 @@ import (
 
 type DescSimpleTime struct{ base.DescBase }
 
+func (*DescSimpleTime) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescSimpleTime) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (*DescSimpleTime) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	value := v.Interface().(time.Time)
 	buf, err := util.MarshallTime(&value)

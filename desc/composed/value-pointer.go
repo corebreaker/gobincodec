@@ -14,6 +14,14 @@ type DescValuePointer struct {
 	elem base.IDesc
 }
 
+func (dv *DescValuePointer) TypeEquals(reflect.Type) bool {
+
+}
+
+func (dv *DescValuePointer) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (dv *DescValuePointer) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	if util.IsNil(v) {
 		return util.WriteBool(w, true)

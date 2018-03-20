@@ -10,6 +10,14 @@ import (
 
 type DescPrimitiveInt16 struct{ base.DescBase }
 
+func (*DescPrimitiveInt16) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescPrimitiveInt16) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (*DescPrimitiveInt16) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	return util.EncodeNum(w, int16(v.Int()))
 }

@@ -10,6 +10,14 @@ import (
 
 type DescPrimitiveInt struct{ DescPrimitiveInt64 }
 
+func (*DescPrimitiveInt) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescPrimitiveInt) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (*DescPrimitiveInt) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, int, error) {
 	var num int64
 

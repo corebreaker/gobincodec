@@ -65,7 +65,9 @@ const (
 	DESC_ARRAY_COMPLEX128
 	DESC_ARRAY_STRING
 	DESC_ARRAY_TIME
-	DESC_OTHER
+
+	DESC_SERIALIZABLE base.DescId = 255
+	DESC_OTHER        base.DescId = 256
 )
 
 type (
@@ -190,6 +192,7 @@ var descMap = map[base.DescId]base.IDesc{
 	DESC_ARRAY_COMPLEX64:   &ac64{DescBase: nb(DESC_ARRAY_COMPLEX64)},
 	DESC_ARRAY_COMPLEX128:  &ac128{DescBase: nb(DESC_ARRAY_COMPLEX128)},
 	DESC_ARRAY_TIME:        &at{DescBase: nb(DESC_ARRAY_TIME)},
+	DESC_SERIALIZABLE:      &tDescSerializable{DescBase: nb(DESC_SERIALIZABLE)},
 }
 
 func GetBaseDesc(id base.DescId) base.IDesc {

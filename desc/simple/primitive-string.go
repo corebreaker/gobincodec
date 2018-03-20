@@ -11,6 +11,14 @@ import (
 
 type DescPrimitiveString struct{ base.DescBase }
 
+func (*DescPrimitiveString) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescPrimitiveString) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (*DescPrimitiveString) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	var out bytes.Buffer
 

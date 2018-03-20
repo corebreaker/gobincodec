@@ -11,6 +11,14 @@ import (
 
 type DescSliceTime struct{ DescArrayTime }
 
+func (ds *DescSliceTime) TypeEquals(reflect.Type) bool {
+
+}
+
+func (ds *DescSliceTime) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (ds *DescSliceTime) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	if util.IsNil(v) {
 		return util.WriteBool(w, true)

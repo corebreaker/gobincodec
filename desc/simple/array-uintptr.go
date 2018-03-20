@@ -10,7 +10,15 @@ import (
 
 type DescArrayUintptr struct{ DescArrayUint64 }
 
-func (DescArrayUintptr) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, int, error) {
+func (*DescArrayUintptr) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescArrayUintptr) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
+func (*DescArrayUintptr) Decode(_ base.ISpec, r io.Reader) (*reflect.Value, int, error) {
 	size, cnt, err := util.DecodeSize(r)
 	if err != nil {
 		return nil, 0, err

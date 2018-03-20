@@ -16,6 +16,14 @@ type DescValueArray struct {
 	value base.IDesc
 }
 
+func (dv *DescValueArray) TypeEquals(reflect.Type) bool {
+
+}
+
+func (dv *DescValueArray) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (dv *DescValueArray) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	if dv.count == 0 {
 		return 0, nil

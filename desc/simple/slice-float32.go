@@ -10,6 +10,14 @@ import (
 
 type DescSliceFloat32 struct{ DescArrayFloat32 }
 
+func (ds *DescSliceFloat32) TypeEquals(reflect.Type) bool {
+
+}
+
+func (ds *DescSliceFloat32) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (ds *DescSliceFloat32) Encode(spec base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	if util.IsNil(v) {
 		return util.WriteBool(w, true)

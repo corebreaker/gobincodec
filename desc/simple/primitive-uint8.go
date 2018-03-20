@@ -10,6 +10,14 @@ import (
 
 type DescPrimitiveUint8 struct{ base.DescBase }
 
+func (*DescPrimitiveUint8) TypeEquals(reflect.Type) bool {
+
+}
+
+func (*DescPrimitiveUint8) Convert(reflect.Value, reflect.Type) *reflect.Value {
+
+}
+
 func (*DescPrimitiveUint8) Encode(_ base.ISpec, w io.Writer, v reflect.Value) (int, error) {
 	return util.EncodeNum(w, uint8(v.Uint()))
 }
